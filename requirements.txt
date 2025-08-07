@@ -3,4 +3,5 @@ jax
 flax
 sentencepiece
 requests
-recurrentgemma @ git+https://github.com/cahyawijaya/recurrentgemma.git
+git+https://github.com/cahyawijaya/recurrentgemma.git
+
