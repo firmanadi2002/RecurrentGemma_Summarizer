@@ -1,4 +1,3 @@
-# app.py
 # Jalankan dengan: streamlit run app.py
 
 import streamlit as st
@@ -10,36 +9,27 @@ import pathlib
 import os
 import requests
 
-
 # ========================================
 # KONFIGURASI
 # ========================================
-MODEL_URL = "https://drive.google.com/uc?id=1bijf_3tIfXs8uINw91Wm4W_6q1GSLkOs"  # Ganti dengan FILE_ID kamu
-MODEL_FILE = "skenario_3.msgpack"
+MODEL_URL = "https://huggingface.co/Fugaki/RecurrentGemma_IndonesiaSummarizerNews/resolve/main/model.msgpack"
+MODEL_FILE = "model.msgpack"
 TOKENIZER_FILE = "tokenizer.model"
 PRESET_VARIANT = "2b"
 GENERATION_STEPS = 120
 MAX_INPUT_LENGTH = 1024
 
 # ========================================
-# UNDUH MODEL JIKA PERLU
+# UNDUH MODEL JIKA BELUM ADA
 # ========================================
-def download_model_from_huggingface():
-    url = "https://huggingface.co/Fugaki/RecurrentGemma_IndonesiaSummarizerNews/resolve/main/model.msgpack"
-    local_filename = "model.msgpack"
-
-    if not os.path.exists(local_filename):
+def download_model_if_needed():
+    if not os.path.exists(MODEL_FILE):
         st.info("📥 Mengunduh model dari Hugging Face...")
-        response = requests.get(url, stream=True)
-        with open(local_filename, 'wb') as f:
+        response = requests.get(MODEL_URL, stream=True)
+        with open(MODEL_FILE, 'wb') as f:
             for chunk in response.iter_content(chunk_size=8192):
                 if chunk:
                     f.write(chunk)
-                    
-download_model_if_needed()
-with st.spinner("Memuat model..."):
-    sampler, tokenizer = load_model_and_tokenizer()
-
 
 # ========================================
 # TOKENIZER WRAPPER
@@ -67,14 +57,19 @@ def load_model_and_tokenizer():
     model_path = artifacts_path / MODEL_FILE
     tokenizer_path = artifacts_path / TOKENIZER_FILE
 
-    if not model_path.exists() or not tokenizer_path.exists():
-        st.error("Pastikan file model dan tokenizer tersedia.")
+    if not model_path.exists():
+        download_model_if_needed()
+
+    if not tokenizer_path.exists():
+        st.error("❌ File tokenizer.model tidak ditemukan.")
         st.stop()
 
+    # Load tokenizer
     sp = spm.SentencePieceProcessor()
     sp.Load(str(tokenizer_path))
     tokenizer = GriffinTokenizer(sp)
 
+    # Load model
     preset = recurrentgemma.Preset.RECURRENT_GEMMA_2B_V1
     model_config = recurrentgemma.GriffinConfig.from_preset(preset)
     model = recurrentgemma.Griffin(model_config)
@@ -101,7 +96,7 @@ def load_model_and_tokenizer():
 # ========================================
 st.set_page_config(page_title="📰 Peringkas Berita", layout="wide")
 st.title("📰 Aplikasi Peringkas Berita Otomatis")
-st.markdown("Ditenagai oleh `RecurrentGemma-2B` yang telah di-fine-tuning.")
+st.markdown("Ditenagai oleh `RecurrentGemma-2B` yang telah di-fine-tuning untuk Bahasa Indonesia.")
 
 with st.spinner("Memuat model..."):
     sampler, tokenizer = load_model_and_tokenizer()
@@ -142,6 +137,3 @@ if st.button("✨ Ringkas Sekarang", type="primary", use_container_width=True):
 
         st.subheader("📄 Ringkasan Hasil")
         st.success(summary)
-
-
-
