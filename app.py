@@ -14,7 +14,7 @@ import gdown
 # KONFIGURASI
 # ========================================
 MODEL_URL = "https://drive.google.com/uc?id=1bijf_3tIfXs8uINw91Wm4W_6q1GSLkOs"  # Ganti dengan FILE_ID kamu
-MODEL_FILE = "model.msgpack"
+MODEL_FILE = "skenario_3.msgpack"
 TOKENIZER_FILE = "tokenizer.model"
 PRESET_VARIANT = "2b"
 GENERATION_STEPS = 120
@@ -130,3 +130,4 @@ if st.button("✨ Ringkas Sekarang", type="primary", use_container_width=True):
 
         st.subheader("📄 Ringkasan Hasil")
         st.success(summary)
+
