@@ -1,0 +1,6 @@
+streamlit
+jax
+flax
+sentencepiece
+recurrentgemma
+git+https://github.com/google-deepmind/recurrentgemma.git
