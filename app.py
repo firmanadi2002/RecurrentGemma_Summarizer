@@ -8,7 +8,8 @@ import sentencepiece as spm
 from recurrentgemma import jax as recurrentgemma
 import pathlib
 import os
-import gdown
+import requests
+
 
 # ========================================
 # KONFIGURASI
@@ -23,18 +24,18 @@ MAX_INPUT_LENGTH = 1024
 # ========================================
 # UNDUH MODEL JIKA PERLU
 # ========================================
-def download_model_if_needed():
-    if not os.path.exists(MODEL_FILE):
-        st.info("📥 Mengunduh model dari Google Drive...")
-        try:
-            gdown.download(MODEL_URL, MODEL_FILE, quiet=False)
-            if os.path.exists(MODEL_FILE):
-                st.success("✅ Model berhasil diunduh.")
-            else:
-                st.error("❌ Gagal mengunduh model. File tidak ditemukan setelah diunduh.")
-        except Exception as e:
-            st.error(f"Terjadi kesalahan saat mengunduh model: {e}")
-            
+def download_model_from_huggingface():
+    url = "https://huggingface.co/Fugaki/RecurrentGemma_IndonesiaSummarizerNews/resolve/main/model.msgpack"
+    local_filename = "model.msgpack"
+
+    if not os.path.exists(local_filename):
+        st.info("📥 Mengunduh model dari Hugging Face...")
+        response = requests.get(url, stream=True)
+        with open(local_filename, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
+                    
 download_model_if_needed()
 with st.spinner("Memuat model..."):
     sampler, tokenizer = load_model_and_tokenizer()
@@ -141,5 +142,6 @@ if st.button("✨ Ringkas Sekarang", type="primary", use_container_width=True):
 
         st.subheader("📄 Ringkasan Hasil")
         st.success(summary)
+
 
 
