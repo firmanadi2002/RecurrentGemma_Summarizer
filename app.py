@@ -26,7 +26,18 @@ MAX_INPUT_LENGTH = 1024
 def download_model_if_needed():
     if not os.path.exists(MODEL_FILE):
         st.info("📥 Mengunduh model dari Google Drive...")
-        gdown.download(MODEL_URL, MODEL_FILE, quiet=False)
+        try:
+            gdown.download(MODEL_URL, MODEL_FILE, quiet=False)
+            if os.path.exists(MODEL_FILE):
+                st.success("✅ Model berhasil diunduh.")
+            else:
+                st.error("❌ Gagal mengunduh model. File tidak ditemukan setelah diunduh.")
+        except Exception as e:
+            st.error(f"Terjadi kesalahan saat mengunduh model: {e}")
+            
+download_model_if_needed()
+with st.spinner("Memuat model..."):
+    sampler, tokenizer = load_model_and_tokenizer()
 
 
 # ========================================
@@ -130,4 +141,5 @@ if st.button("✨ Ringkas Sekarang", type="primary", use_container_width=True):
 
         st.subheader("📄 Ringkasan Hasil")
         st.success(summary)
+
 
