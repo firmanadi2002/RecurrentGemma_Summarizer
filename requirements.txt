@@ -2,5 +2,6 @@ streamlit
 jax
 flax
 sentencepiece
-gdown
+requests
 git+https://github.com/google-deepmind/recurrentgemma.git
+
