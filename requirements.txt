@@ -1,7 +1,0 @@
-streamlit
-jax
-flax
-sentencepiece
-requests
-git+https://github.com/cahyawijaya/recurrentgemma.git
-
